@@ -1,11 +1,33 @@
 #include <pcap.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <string.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #define ETHER_ADDR_LEN 6
-/* Ethernet header */
+#define SIZE_ETHERNET 14
+#define IP_RF 0x8000		/* reserved fragment flag */
+#define IP_DF 0x4000		/* dont fragment flag */
+#define IP_MF 0x2000		/* more fragments flag */
+#define IP_OFFMASK 0x1fff	/* mask for fragmenting bits */
+		/* Ethernet header */
 		struct sniff_ethernet {
-		u_char ether_dhost[ETHER_ADDR_LEN]; /* Destination host address */
 		u_char ether_shost[ETHER_ADDR_LEN]; /* Source host address */
+		u_char ether_dhost[ETHER_ADDR_LEN]; /* Destination host address */
+		
 		u_short ether_type; /* IP? ARP? RARP? etc */
+		};
+
+		struct sniff_ip {
+		u_char ip_vhl;		/* version << 4 | header length >> 2 */
+		u_char ip_tos;		/* type of service */
+		u_short ip_len;		/* total length */
+		u_short ip_id;		/* identification */
+		u_short ip_off;		/* fragment offset field */
+		u_char ip_ttl;		/* time to live */
+		u_char ip_p;		/* protocol */
+		u_short ip_sum;		/* checksum */
+		struct in_addr ip_src,ip_dst;/* source and dest address */
 		};
 
 	 int main(int argc, char *argv[])
@@ -20,7 +42,8 @@
 		struct pcap_pkthdr header;	/* The header that pcap gives us */
 		const u_char *packet;		/* The actual packet */
 		const struct sniff_ethernet *ethernet;
-
+		const struct sniff_ip *ip; /* The IP header */
+		u_int size_ip;
 		/* Define the device */
 		dev = pcap_lookupdev(errbuf);
 		if (dev == NULL) {
@@ -55,9 +78,36 @@
 		//printf("Jacked a packet with length of [%d]\n", header.len);
 		
 		ethernet = (struct sniff_ethernet*)(packet);
-		for(int p = 0; p<6; p++)
-			printf(" : %02x",ethernet->ether_dhost[p]);
+		//packet += 14;
+		ip = (struct sniff_addr*)(packet + SIZE_ETHERNET);
+		//size_ip = IP_HL(ip)*4;
+		//if (size_ip < 20) {
+		//printf("   * Invalid IP header length: %u bytes\n", size_ip);
+		//return;
+		//}
+
+		char src_ip[1024];
+		char dst_ip[1024];
+		strcpy(src_ip,inet_ntoa(ip->ip_src));
+		strcpy(dst_ip,inet_ntoa(ip->ip_dst));
+
+		printf(" s ip : %s:",src_ip);
+		/*
+		printf("eth.dmac : ");
+		for(int d = 0; d<6; d++){
+			printf("%02x",ethernet->ether_dhost[d]);
+			printf(" : ");
+			}
 		printf("\n");
+		
+		printf("eth.smac : ");
+		for(int s = 0; s<6; s++){
+			printf("%02x",ethernet->ether_shost[s]);
+			printf(" : ");
+			}
+		printf("\n");
+		
+		*/
 		}
 
 		/* And close the session */
