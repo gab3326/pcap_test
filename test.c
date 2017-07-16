@@ -1,6 +1,13 @@
 #include <pcap.h>
 #include <stdio.h>
 #define ETHER_ADDR_LEN 6
+/* Ethernet header */
+		struct sniff_ethernet {
+		u_char ether_dhost[ETHER_ADDR_LEN]; /* Destination host address */
+		u_char ether_shost[ETHER_ADDR_LEN]; /* Source host address */
+		u_short ether_type; /* IP? ARP? RARP? etc */
+		};
+
 	 int main(int argc, char *argv[])
 	 {
 		pcap_t *handle;			/* Session handle */
@@ -12,12 +19,7 @@
 		bpf_u_int32 net;		/* Our IP */
 		struct pcap_pkthdr header;	/* The header that pcap gives us */
 		const u_char *packet;		/* The actual packet */
-
-
-		struct sniff_ethernet {
-		u_char ether_dhost[ETHER_ADDR_LEN]; /* Destination host address */
-		u_char ether_shost[ETHER_ADDR_LEN]; /* Source host address */
-		u_short ether_type; /* IP? ARP? RARP? etc */
+		const struct sniff_ethernet *ethernet;
 
 		/* Define the device */
 		dev = pcap_lookupdev(errbuf);
@@ -50,9 +52,14 @@
 		/* Grab a packet */
 		while(1){
 		i = pcap_next_ex(handle, &header, &packet);
-		printf("Jacked a packet with length of [%d]\n", header.len);
-
+		//printf("Jacked a packet with length of [%d]\n", header.len);
+		
+		ethernet = (struct sniff_ethernet*)(packet);
+		for(int p = 0; p<6; p++)
+			printf(" : %02x",ethernet->ether_dhost[p]);
+		printf("\n");
 		}
+
 		/* And close the session */
 		pcap_close(handle);
 		return(0);
