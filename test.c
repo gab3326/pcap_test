@@ -10,8 +10,8 @@
 #define IP_DF 0x4000		/* dont fragment flag */
 #define IP_MF 0x2000		/* more fragments flag */
 #define IP_OFFMASK 0x1fff	/* mask for fragmenting bits */
-#define IP_HL(ip)		(((ip)->ip_vhl) & 0x0f)
-#define IP_V(ip)		(((ip)->ip_vhl) >> 4)
+#define IP_HL(ip)	(((ip)->ip_vhl) & 0x0f)
+#define IP_V(ip)	(((ip)->ip_vhl) >> 4)
 		/* Ethernet header */
 		struct sniff_ethernet {
 		u_char ether_shost[ETHER_ADDR_LEN]; /* Source host address */
@@ -32,15 +32,17 @@
 		struct in_addr ip_src,ip_dst;/* source and dest address */
 		};
 		
+		/* TCP header */
 		typedef u_int tcp_seq;
+
 		struct sniff_tcp {
-		u_short th_sport;	/* source port */
-		u_short th_dport;	/* destination port */
-		tcp_seq th_seq;		/* sequence number */
-		tcp_seq th_ack;		/* acknowledgement number */
-		u_char th_offx2;	/* data offset, rsvd */
+			u_short th_sport;	/* source port */
+			u_short th_dport;	/* destination port */
+			tcp_seq th_seq;		/* sequence number */
+			tcp_seq th_ack;		/* acknowledgement number */
+			u_char th_offx2;	/* data offset, rsvd */
 	#define TH_OFF(th)	(((th)->th_offx2 & 0xf0) >> 4)
-		u_char th_flags;
+			u_char th_flags;
 	#define TH_FIN 0x01
 	#define TH_SYN 0x02
 	#define TH_RST 0x04
@@ -50,10 +52,10 @@
 	#define TH_ECE 0x40
 	#define TH_CWR 0x80
 	#define TH_FLAGS (TH_FIN|TH_SYN|TH_RST|TH_ACK|TH_URG|TH_ECE|TH_CWR)
-		u_short th_win;		/* window */
-		u_short th_sum;		/* checksum */
-		u_short th_urp;		/* urgent pointer */		
-		};
+			u_short th_win;		/* window */
+			u_short th_sum;		/* checksum */
+			u_short th_urp;		/* urgent pointer */
+			};
 
 	 int main(int argc, char *argv[])
 	 {
@@ -71,6 +73,7 @@
 		u_int size_ip;
 		u_int size_tcp;
 		const struct sniff_tcp *tcp;
+		const char *payload;
 		/* Define the device */
 		dev = pcap_lookupdev(errbuf);
 		if (dev == NULL) {
@@ -102,36 +105,33 @@
 		/* Grab a packet */
 		while(1){
 		i = pcap_next_ex(handle, &header, &packet);
-		printf("*1\n");
 		ethernet = (struct sniff_ethernet*)(packet);
-		//packet += 14;
-		printf("*2\n");
+		ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
 		size_ip = IP_HL(ip)*4;
-		ip = (struct sniff_addr*)(packet + SIZE_ETHERNET);
-		
 		size_tcp = TH_OFF(tcp)*4;
-		printf("*3\n");
-		tcp = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
-			
-		//if (size_ip < 20) {
-		//printf("   * Invalid IP header length: %u bytes\n", size_ip);
-		//return;
-		//}
-		printf("*4\n");
-
-		//printf("%d",ntohs(tcp->th_sport));
-
+		payload = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);	
 		char src_ip[1024];
 		char dst_ip[1024];
 		strcpy(src_ip,inet_ntoa(ip->ip_src));
 		strcpy(dst_ip,inet_ntoa(ip->ip_dst));
+		//printf("*test1\n");
+		
+		//packet += 14;
+		//printf("*test2\n");
+		//
+		
+		
+		//size_tcp = TH_OFF(tcp)*4;
+		//printf("*test3\n");
+		
+		
+		//if (size_ip < 20) {
+		//printf("   * Invalid IP header length: %u bytes\n", size_ip);
+		//return;
+		//}
+		//printf("*test4\n");
 
-		printf("Source ip : %s",src_ip);
-		printf("\n");
-		printf("Destination ip : %s",dst_ip);
-		printf("\n");
-
-		/*
+		
 		printf("eth.dmac : ");
 		for(int d = 0; d<6; d++){
 			printf("%02x",ethernet->ether_dhost[d]);
@@ -146,8 +146,17 @@
 			}
 		printf("\n");
 		
-		*/
+		printf("Source ip : %s",src_ip);
+		printf("\n");
+		printf("Destination ip : %s",dst_ip);
+		printf("\n");
+		
+
+		printf("Data : %s", payload);
+		printf("\n");
+		//printf("tcp : %d",ntohs(tcp->th_sport));
 		}
+		
 
 		/* And close the session */
 		pcap_close(handle);
