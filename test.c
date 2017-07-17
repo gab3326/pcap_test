@@ -130,32 +130,32 @@ int main(int argc, char *argv[])
 
 		void tcp_port(const u_char *packet)
 		{
-		printf("Tcp Source Port = %d \n", ((packet[34]*256) + packet[35]));
-		printf("Tcp Destination Port = %d \n", ((packet[36]*256) + packet[37]));
+		printf("\tTcp Source Port = %d \n", ((packet[34]*256) + packet[35]));
+		printf("\tTcp Destination Port = %d \n", ((packet[36]*256) + packet[37]));
 		}
 		
-		printf("Eth.dmac : ");
+		printf("\tEth.dmac : ");
 		for(int d = 0; d<6; d++){
 			printf("%02x",ethernet->ether_dhost[d]);
 			printf(" : ");
 			}
 		printf("\n");
 		
-		printf("Eth.smac : ");
+		printf("\tEth.smac : ");
 		for(int s = 0; s<6; s++){
 			printf("%02x",ethernet->ether_shost[s]);
 			printf(" : ");
 			}
 		printf("\n");
 		
-		printf("Source ip : %s",src_ip);
+		printf("\tSource ip : %s",src_ip);
 		printf("\n");
-		printf("Destination ip : %s",dst_ip);
+		printf("\tDestination ip : %s",dst_ip);
 		printf("\n");
 		
 		tcp_port(packet); 		
 
-		printf("Data : \n %s", payload);
+		printf("\tData : \n %s", payload);
 		printf("\n");
 		printf("\n");
 
