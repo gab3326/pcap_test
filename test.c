@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 	uint16_t size_ip;
 	uint16_t size_tcp;
 	const struct sniff_tcp *tcp;
-	const char *payload;
+	const char *data;
 
 	/* Define the device */
 	dev = pcap_lookupdev(errbuf);
@@ -114,10 +114,12 @@ int main(int argc, char *argv[])
 	
 		char src_ip[1024];
 		char dst_ip[1024];
-		strcpy(src_ip,inet_ntoa(ip->ip_src));
-		strcpy(dst_ip,inet_ntoa(ip->ip_dst));
+		//INET_ADDRSTRLEN
 
-		payload = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);
+		inet_ntop(2,&(ip->ip_src),src_ip,16);//16. Length of the string form for IP.
+		inet_ntop(2,&(ip->ip_dst),dst_ip,16);
+
+		data = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);
 		
 		//printf("*test1\n"); <-error test area
 		
@@ -155,7 +157,7 @@ int main(int argc, char *argv[])
 		
 		tcp_port(packet); 		
 
-		printf("\tData : \n %s", payload);
+		printf("\tData : \n %s", data);
 		printf("\n");
 		printf("\n");
 
