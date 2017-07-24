@@ -123,8 +123,8 @@ int main(int argc, char *argv[])
 			printf("\tTcp Destination port : %d\n",ntohs(tcp->th_dport));
 		}
 		
-		//if(size_data>=54)
-		printf("\tData_size : %d\n", size_data);
+		//if(size_data>=54?)
+		printf("\tData_size : %d\n",size_data);
 		printf("\tData : \n %s", data);
 		printf("\n");
 		printf("\n");
