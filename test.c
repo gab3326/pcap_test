@@ -108,9 +108,12 @@ int main(int argc, char *argv[])
 
 		while(1){
 		i = pcap_next_ex(handle, &header, &packet);
+
 		ethernet = (struct sniff_ethernet*)(packet);
 		ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
-		tcp = 
+		tcp = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
+		data = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);
+
 		size_ip = IP_HL(ip)*4;
 		size_tcp = TH_OFF(tcp)*4;
 
@@ -122,7 +125,7 @@ int main(int argc, char *argv[])
 		inet_ntop(2,&(ip->ip_src),src_ip,16);//INET_ADDRSTRLEN
 		inet_ntop(2,&(ip->ip_dst),dst_ip,16);//16. Length of the string form for IP.
 
-		data = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);
+		
 		
 		//printf("*test1\n"); <-error test area
 		
@@ -163,7 +166,6 @@ int main(int argc, char *argv[])
 		
 		if((ip->ip_p)==0x6)
 			printf("Tcp Source port : %d",ntohs(tcp->th_sport));
-		}
 
 		printf("\tData_size : %d\n", size_data);
 		printf("\tData : \n %s", data);
