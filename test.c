@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 		size_ip = IP_HL(ip)*4;
 		size_tcp = TH_OFF(tcp)*4;
 
-		size_data = (ip->ip_len)*4 - ((IP_HL(ip)*4) + (TH_OFF(tcp)*4));
+		size_data = ntohs(ip->ip_len)*4 - ((IP_HL(ip)*4) + (TH_OFF(tcp)*4));
 		
 		char src_ip[1024];
 		char dst_ip[1024];
