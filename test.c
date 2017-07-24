@@ -147,14 +147,16 @@ int main(int argc, char *argv[])
 		
 		printf("\tEth.dmac : ");
 		for(int d = 0; d<6; d++){
-			printf("%02x",ethernet->ether_dhost[d]);
+			printf("[%02x]",ethernet->ether_dhost[d]);
+			if(d<5)
 			printf(" : ");
 		}
 		printf("\n");
 		
 		printf("\tEth.smac : ");
 		for(int s = 0; s<6; s++){
-			printf("%02x",ethernet->ether_shost[s]);
+			printf("[%02x]",ethernet->ether_shost[s]);
+			if(s<5)
 			printf(" : ");
 		}
 		printf("\n");
