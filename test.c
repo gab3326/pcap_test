@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
 	uint16_t size_tcp;
 	const struct sniff_tcp *tcp;
 	const char *data;
+	uint16_t size_data;
 
 	/* Define the device */
 	dev = pcap_lookupdev(errbuf);
@@ -111,7 +112,8 @@ int main(int argc, char *argv[])
 		ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
 		size_ip = IP_HL(ip)*4;
 		size_tcp = TH_OFF(tcp)*4;
-	
+		size_data = (ip->ip_len)*4 - ((IP_HL(ip)*4) + (TH_OFF(tcp)*4));
+		
 		char src_ip[1024];
 		char dst_ip[1024];
 		//INET_ADDRSTRLEN
@@ -156,11 +158,12 @@ int main(int argc, char *argv[])
 		printf("\n");
 		
 		tcp_port(packet); 		
-
+		
+		printf("Data_size : %d\n", size_data);
 		printf("\tData : \n %s", data);
 		printf("\n");
 		printf("\n");
-
+		
 		//printf("tcp : %d",ntohs(tcp->th_sport));  <-error why???!!!
 		}
 		
