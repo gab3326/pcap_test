@@ -108,7 +108,8 @@ int main(int argc, char *argv[])
 
 		while(1){
 		i = pcap_next_ex(handle, &header, &packet);
-
+		
+		
 		ethernet = (struct sniff_ethernet*)(packet);
 		ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
 		tcp = (struct sniff_tcp*)(packet + SIZE_ETHERNET + size_ip);
@@ -143,30 +144,32 @@ int main(int argc, char *argv[])
 		printf("\tTcp Destination Port = %d \n", ((packet[36]*256) + packet[37]));
 		}*/
 		
+		
 		printf("\tEth.dmac : ");
 		for(int d = 0; d<6; d++){
 			printf("%02x",ethernet->ether_dhost[d]);
 			printf(" : ");
-			}
+		}
 		printf("\n");
 		
 		printf("\tEth.smac : ");
 		for(int s = 0; s<6; s++){
 			printf("%02x",ethernet->ether_shost[s]);
 			printf(" : ");
-			}
+		}
 		printf("\n");
-		
-		printf("\tSource ip : %s",src_ip);
-		printf("\n");
-		printf("\tDestination ip : %s",dst_ip);
-		printf("\n");
-		
+			
+		if(ntohs(ethernet->ether_type) == 0x0800){ //ether_type=0x0800->ipv4 packet, 0x0806->arp packet
+			printf("\tSource ip : %s",src_ip);
+			printf("\n");
+			printf("\tDestination ip : %s",dst_ip);
+			printf("\n");
+		}		
 		//tcp_port(packet); 		
 		
 		if((ip->ip_p)==0x6){
-			printf("Tcp Source port : %d",ntohs(tcp->th_sport));
-			printf("Tcp Destination port : %d",ntohs(tcp->th_dport));
+			printf("\tTcp Source port : %d\n",ntohs(tcp->th_sport));
+			printf("\tTcp Destination port : %d\n",ntohs(tcp->th_dport));
 		}
 
 		printf("\tData_size : %d\n", size_data);
