@@ -171,11 +171,13 @@ int main(int argc, char *argv[])
 			printf("\tTcp Source port : %d\n",ntohs(tcp->th_sport));
 			printf("\tTcp Destination port : %d\n",ntohs(tcp->th_dport));
 		}
-
+		
+		if(size_data>53){
 		printf("\tData_size : %d\n", size_data);
 		printf("\tData : \n %s", data);
 		printf("\n");
 		printf("\n");
+		}
 		}
 		
 		pcap_close(handle);
