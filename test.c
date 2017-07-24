@@ -164,8 +164,10 @@ int main(int argc, char *argv[])
 		
 		//tcp_port(packet); 		
 		
-		if((ip->ip_p)==0x6)
+		if((ip->ip_p)==0x6){
 			printf("Tcp Source port : %d",ntohs(tcp->th_sport));
+			printf("Tcp Destination port : %d",ntohs(tcp->th_dport));
+		}
 
 		printf("\tData_size : %d\n", size_data);
 		printf("\tData : \n %s", data);
