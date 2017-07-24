@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
 	const u_char *packet;		/* The actual packet */
 	const struct sniff_ethernet *ethernet;
 	const struct sniff_ip *ip; /* The IP header */
-	u_int size_ip;
-	u_int size_tcp;
+	uint16_t size_ip;
+	uint16_t size_tcp;
 	const struct sniff_tcp *tcp;
 	const char *payload;
 
