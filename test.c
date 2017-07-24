@@ -110,16 +110,17 @@ int main(int argc, char *argv[])
 		i = pcap_next_ex(handle, &header, &packet);
 		ethernet = (struct sniff_ethernet*)(packet);
 		ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
+		tcp = 
 		size_ip = IP_HL(ip)*4;
 		size_tcp = TH_OFF(tcp)*4;
+
 		size_data = (ip->ip_len)*4 - ((IP_HL(ip)*4) + (TH_OFF(tcp)*4));
 		
 		char src_ip[1024];
 		char dst_ip[1024];
-		//INET_ADDRSTRLEN
 
-		inet_ntop(2,&(ip->ip_src),src_ip,16);//16. Length of the string form for IP.
-		inet_ntop(2,&(ip->ip_dst),dst_ip,16);
+		inet_ntop(2,&(ip->ip_src),src_ip,16);//INET_ADDRSTRLEN
+		inet_ntop(2,&(ip->ip_dst),dst_ip,16);//16. Length of the string form for IP.
 
 		data = (u_char *)(packet + SIZE_ETHERNET + size_ip + size_tcp);
 		
@@ -132,11 +133,12 @@ int main(int argc, char *argv[])
 		
 		//printf("*test4\n");
 
+		/* Hard coding area
 		void tcp_port(const u_char *packet)
 		{
 		printf("\tTcp Source Port = %d \n", ((packet[34]*256) + packet[35]));
 		printf("\tTcp Destination Port = %d \n", ((packet[36]*256) + packet[37]));
-		}
+		}*/
 		
 		printf("\tEth.dmac : ");
 		for(int d = 0; d<6; d++){
@@ -157,14 +159,16 @@ int main(int argc, char *argv[])
 		printf("\tDestination ip : %s",dst_ip);
 		printf("\n");
 		
-		tcp_port(packet); 		
+		//tcp_port(packet); 		
 		
-		printf("Data_size : %d\n", size_data);
+		if((ip->ip_p)==0x6)
+			printf("Tcp Source port : %d",ntohs(tcp->th_sport));
+		}
+
+		printf("\tData_size : %d\n", size_data);
 		printf("\tData : \n %s", data);
 		printf("\n");
 		printf("\n");
-		
-		//printf("tcp : %d",ntohs(tcp->th_sport));  <-error why???!!!
 		}
 		
 		pcap_close(handle);
