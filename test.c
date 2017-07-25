@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
 		char src_ip[1024];
 		char dst_ip[1024];
 
-		inet_ntop(2,&(ip->ip_src),src_ip,16);//INET_ADDRSTRLEN
-		inet_ntop(2,&(ip->ip_dst),dst_ip,16);//16. Length of the string form for IP.
+		inet_ntop(2,&(ip->ip_src),src_ip,INET_ADDRSTRLEN);//INET_ADDRSTRLEN
+		inet_ntop(2,&(ip->ip_dst),dst_ip,INET_ADDRSTRLEN);//16. Length of the string form for IP.
 
 		
 		
