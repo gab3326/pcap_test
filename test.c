@@ -53,10 +53,10 @@ int main(int argc, char *argv[])
 		return(2);
 	}
 
-		int i=0;
+		
 
 		while(1){
-		i = pcap_next_ex(handle, &header, &packet);
+		pcap_next_ex(handle, &header, &packet);
 		
 		
 		ethernet = (struct sniff_ethernet*)(packet);
